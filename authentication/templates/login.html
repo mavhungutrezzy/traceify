@@ -1,0 +1,50 @@
+{% extends 'header.html' %}
+
+
+{% block content %}
+<div class="px-5 py-5 p-lg-0">
+    <div class="d-flex justify-content-center">
+        <div class="col-12 col-md-9 col-lg-7 min-h-lg-screen d-flex flex-column justify-content-center py-lg-16 px-lg-20 position-relative">
+            <div class="row">
+                <div class="col-lg-10 col-md-9 col-xl-7 mx-auto">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert mb-3 alert-danger alert-dismissible fade show" role="alert">
+                                <strong> {{ message }}. </strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <form method="POST" action="login_user">
+                        {% csrf_token %}
+                        <div class="mb-5">
+                            <label class="form-label" for="email">Email address</label>
+                            <input required type="email" class="form-control" name="username" placeholder="Your email address">
+                        </div>
+                        <div class="mb-5">
+                            <label class="form-label" for="password">Password</label>
+                            <input required type="password" class="form-control" name="password" placeholder="Password" autocomplete="current-password">
+                        </div>
+                        
+                        <div class="mb-5">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="check_example" id="check_example">
+                                <label class="form-check-label" for="check_example"> Keep me logged in </label>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary w-full"> Sign in </button>
+                        </div>
+                    </form>
+                    
+                    
+                    <div class="my-6">
+                        <small>Don't have an account?</small>
+                        <a href="{% url 'register' %}" class="text-warning text-sm font-semibold">Sign up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

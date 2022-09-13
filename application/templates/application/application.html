@@ -1,0 +1,426 @@
+{% extends '_base.html' %}
+
+{% block content %}
+
+<div class="h-screen flex-grow-1 overflow-y-lg-auto">
+    <!-- Header -->
+    <header class="bg-surface-primary border-bottom pt-6">
+        <div class="container-fluid">
+            <div class="mb-npx">
+                <div class="row align-items-center">
+                    <div class="col-sm-6 col-12 mb-4 mb-sm-0">
+                        <!-- Flash Message -->
+                        {% if messages %}
+                            {% for message in messages %}
+                                    <div class="alert mb-3 alert-success alert-dismissible fade show" role="alert">
+                                        <strong> {{ message }}. </strong>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <!-- Actions -->
+                    <div class="col-sm-6 col-12 text-sm-end">
+                        <div class="mx-n1">
+                            <button class="btn d-inline-flex btn-sm btn-primary mx-1" data-bs-toggle="modal" data-bs-target="#create-application-modal">
+                                <span class=" pe-2">
+                                    <i class="bi bi-plus"></i>
+                                </span>
+                                <span>Create Application</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Modal Start -->
+                    <div class="modal" tabindex="-1" id="create-application-modal">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <span class="mx-2"><i class="bi bi-calendar-date"></i></span>
+                                    <h5 class="modal-title">Create Application</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="POST" action="create">
+                                    <div class="modal-body">
+                                        {% csrf_token %}
+                                        <div class="mb-2">
+                                            <label class="form-label" for="formInputExample">Company name</label>
+                                            <input required type="text" class="form-control"name='name' value="{{ application.name }}" type="text" class="form-control" id="formInputExample" placeholder="">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label" for="formInputExample"> Title</label>
+                                            <input required type="text" class="form-control"name='title' value="{{ application.title }}" type="text" class="form-control" id="formInputExample" placeholder="">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label" for="formInputExample"> Location </label>
+                                            <input required type="text" class="form-control"name='location'value="{{ application.location }}" type="text" class="form-control" id="formInputExample" placeholder="">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label" for="formInputExample"> Date </label>
+                                            <input required type="date" class="form-control"name ='date' value="{{ application.date_applied }}" type="date" class="form-control" id="formInputExample" placeholder="">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label" for="">Status</label>
+                                            <select required="1" name='status' class="form-select" aria-label="Default select example">
+                                                <option value=""> Select Status </option>
+                                                <option value="Applied">Applied</option>
+                                                <option value="Screen">Screen</option>
+                                                <option value="Interview">Interview</option>
+                                                <option value="Offer">Offer</option>
+                                                <option value="Rejected">Rejected</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label" for="formInputExample"> Notes </label>
+                                            <textarea name ='notes' value="" type="" class="form-control" id="formInputExample" placeholder=""></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Create</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal End -->
+                </div>
+                <!-- Nav -->
+                <ul class="nav nav-tabs mt-4 overflow-x border-0">
+                    
+                </ul>
+            </div>
+        </div>
+    </header>
+    <!-- Main -->
+    <main class="py-6 bg-surface-secondary">
+        <div class="container-fluid">
+            <!-- Card  -->
+            <div class="row g-6 mb-6">
+                <div class="col-xl-4 col-sm-6 col-12">
+                    <div class="mb-3">
+                        <span class="badge badge-pill bg-soft-primary text-primary me-1">
+                            Applied
+                        </span>
+                    </div>
+                    {% for application in applications %}
+                    {% if application.status == "Applied" %}
+                        <div class="card mb-4">
+
+                            <div class="card-body pb-1">
+                                <!-- The link trigger modal  -->
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#{{ application.name}}{{ application.id }}" >
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <div class="avatar  rounded ">
+                                                <img src="{{ application.logo }}" alt="avatar">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <span class="h4 font-bold mb-0">{{ application.title }}</span>
+                                            <span class="h5 font-semibold text-muted text-sm d-block mb-2">{{ application.name }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 mb-0 text-sm">
+                                        <span class="badge badge-pill bg-soft-primary text-primary me-2"> {{ application.status }} </span>
+                                        <span class="text-nowrap text-xs text-muted"> {{ application.date_applied }} </span>
+                                    </div>
+                                </a>
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <span class="h6 font-semibold text-muted text-sm d-block mb-2"> 
+                                            <i class="bi bi-geo-alt"></i> {{ application.location }}
+                                        </span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <form method="POST" action="delete/{{ application.id }}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm  text-muted p-0 m-0 text-md">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Update Modal -->
+                        <div class="modal" tabindex="-1" id="{{ application.name }}{{ application.id }}">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form method="POST" action="update/{{ application.id }}">
+                
+                                        <div class="modal-header">
+                                            <span class="mx-2"><i class="bi bi-calendar-date"></i></span>
+                                            <h5 class="modal-title">Update Application</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {% csrf_token %}
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample">Company name</label>
+                                                <input name='name' value="{{ application.name }}" type="text" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample"> Title</label>
+                                                <input name='title' value="{{ application.title }}" type="text" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample"> Location </label>
+                                                <input name='location'value="{{ application.location }}" type="text" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample"> Date </label>
+                                                <input name ='date' value="{{ application.date_applied }}" type="date" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="">Status</label>
+                                                <select required="1" name='status' class="form-select" aria-label="Default select example">
+                                                    <option value="{{ application.status }}"> {{ application.status }}</option>
+                                                    <option value="Applied">Applied</option>
+                                                    <option value="Screen">Screen</option>
+                                                    <option value="Interview">Interview</option>
+                                                    <option value="Offer">Offer</option>
+                                                    <option value="Rejected">Rejected</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample"> Notes </label>
+                                                <textarea name ='notes' value="{{ application.notes }}" type="text" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+
+                <div class="col-xl-4 col-sm-6 col-12">
+                    <div class="mb-3">
+                        <span class="badge badge-pill bg-soft-info text-info me-1">
+                            Inprogress
+                        </span>
+                    </div>
+                    {% for application in applications %}
+                    {% if application.status == "Screen" or application.status == "Interview" %}
+                        <div class="card mb-4">
+
+                            <div class="card-body pb-1">
+                                <!-- The link trigger modal  -->
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#{{ application.name}}{{ application.id }}" >
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <div class="avatar  rounded ">
+                                                <img src="{{ application.logo }}" alt="avatar">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <span class="h4 font-bold mb-0">{{ application.title }}</span>
+                                            <span class="h5 font-semibold text-muted text-sm d-block mb-2">{{ application.name }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 mb-0 text-sm">
+                                        <span class="badge badge-pill bg-soft-info text-info me-2"> {{ application.status }} </span>
+                                        <span class="text-nowrap text-xs text-muted"> {{ application.date_applied }} </span>
+                                    </div>
+                                </a>
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <span class="h6 font-semibold text-muted text-sm d-block mb-2"> 
+                                            <i class="bi bi-geo-alt"></i> {{ application.location }}
+                                        </span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <form method="POST" action="delete/{{ application.id }}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm  text-muted p-0 m-0 text-md">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Update Modal -->
+                        <div class="modal" tabindex="-1" id="{{ application.name }}{{ application.id }}">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form method="POST" action="update/{{ application.id }}">
+                
+                                        <div class="modal-header">
+                                            <span class="mx-2"><i class="bi bi-calendar-date"></i></span>
+                                            <h5 class="modal-title">Update Application</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {% csrf_token %}
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample">Company name</label>
+                                                <input name='name' value="{{ application.name }}" type="text" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample"> Title</label>
+                                                <input name='title' value="{{ application.title }}" type="text" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample"> Location </label>
+                                                <input name='location'value="{{ application.location }}" type="text" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample"> Date </label>
+                                                <input name ='date' value="{{ application.date_applied }}" type="date" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="">Status</label>
+                                                <select required="1" name='status' class="form-select" aria-label="Default select example">
+                                                    <option value="{{ application.status }}"> {{application.status}}</option>
+                                                    <option value="Applied">Applied</option>
+                                                    <option value="Screen">Screen</option>
+                                                    <option value="Interview">Interview</option>
+                                                    <option value="Offer">Offer</option>
+                                                    <option value="Rejected">Rejected</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample"> Notes </label>
+                                                <textarea name ='notes' value="{{ application.notes }}" type="text" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+
+
+                <div class="col-xl-4 col-sm-6 col-12">
+                    <div class="mb-3">
+                        <span class="badge badge-pill bg-soft-success text-success me-1">
+                            Offer
+                        </span>
+                    </div>
+                    {% for application in applications %}
+                    {% if application.status == "Offer"  or application.status == "Rejected" %}
+                        <div class="card mb-4">
+
+                            <div class="card-body pb-1">
+                                <!-- The link trigger modal  -->
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#{{ application.name}}{{ application.id }}" >
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <div class="avatar  rounded ">
+                                                <img src="{{ application.logo }}" alt="avatar">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <span class="h4 font-bold mb-0">{{ application.title }}</span>
+                                            <span class="h5 font-semibold text-muted text-sm d-block mb-2">{{ application.name }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 mb-0 text-sm">
+                                        {% if application.status == "Offer" %}
+                                            <span class="badge badge-pill bg-soft-success text-success me-2"> {{ application.status }} </span>
+                                        {% else %}
+                                            <span class="badge badge-pill bg-soft-danger text-danger me-2"> {{ application.status }} </span>
+                                        {% endif %}
+                                        <span class="text-nowrap text-xs text-muted"> {{ application.date_applied }} </span>
+                                    </div>
+                                </a>
+                                <div class="row mt-3">
+                                    <div class="col">
+                                        <span class="h6 font-semibold text-muted text-sm d-block mb-2"> 
+                                            <i class="bi bi-geo-alt"></i> {{ application.location }}
+                                        </span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <form method="POST" action="delete/{{ application.id }}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm  text-muted p-0 m-0 text-md">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Update Modal -->
+                        <div class="modal" tabindex="-1" id="{{ application.name }}{{ application.id }}">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <form method="POST" action="update/{{ application.id }}">
+                
+                                        <div class="modal-header">
+                                            <span class="mx-2"><i class="bi bi-calendar-date"></i></span>
+                                            <h5 class="modal-title">Update Application</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {% csrf_token %}
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample">Company name</label>
+                                                <input name='name' value="{{ application.name }}" type="text" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample"> Title</label>
+                                                <input name='title' value="{{ application.title }}" type="text" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample"> Location </label>
+                                                <input name='location'value="{{ application.location }}" type="text" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample"> Date </label>
+                                                <input name ='date' value="{{ application.date_applied }}" type="date" class="form-control">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="">Status</label>
+                                                <select required="1" name='status' class="form-select" aria-label="Default select example">
+                                                    <option value="{{ application.status }}"> {{application.status}}</option>
+                                                    <option value="Applied">Applied</option>
+                                                    <option value="Screen">Screen</option>
+                                                    <option value="Interview">Interview</option>
+                                                    <option value="Offer">Offer</option>
+                                                    <option value="Rejected">Rejected</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label" for="formInputExample"> Notes </label>
+                                                <textarea name ='notes' value="{{ application.notes }}" type="text" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+
+
+            </div>
+        </div>
+    </main>
+</div>
+
+{% endblock %}
