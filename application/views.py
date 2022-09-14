@@ -13,7 +13,9 @@ CLEARBIT_API_KEY = os.environ.get("CLEARBIT_API_KEY")
 
 def application(request):
     """Render application page with user's submitted applications"""
-    applications = Application.objects.all()
+    applications = Application.objects.filter(user=request.user)
+    if applications is None:
+        return render(request, '_base.html')
 
     return render(
         request, "application/application.html", {"applications": applications}
@@ -38,7 +40,12 @@ def create_application(request):
     }
 
     url = "https://company.clearbit.com/v1/domains/find?name=query"
-    response = requests.get(url.replace("query", name), headers=headers)
+    #! Handle the api call timeout error
+    #TODO: Handle the api call error and create object with default logo
+    try:
+        response = requests.get(url.replace("query", name), headers=headers)
+    except Exception:
+        messages.error(request, 'Request timeout')
     response_data = json.loads(response.text)
 
     if response_data["logo"] is None:
@@ -54,6 +61,7 @@ def create_application(request):
         status=status,
         logo=logo,
         date_applied=date,
+        user=request.user,
     )
     application.save()
 

@@ -38,6 +38,11 @@ server:
 test:
 	poetry run python manage.py test
 
+.PHONY: migrate
+migrate:
+	poetry run python manage.py makemigrations
+	poetry run python manage.py migrate
+
 .PHONY: clean
 clean:
 	find . -type f -name "*.pyc" | xargs rm -fr
